@@ -1,7 +1,7 @@
 :root {
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: #141414;
-  background: #f6f7fb;
+  background: #f9fafb;
 }
 
 * {
@@ -18,61 +18,12 @@ a {
 }
 
 .app-shell {
+  display: flex;
   min-height: 100vh;
+  flex-direction: column;
 }
 
 .app-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 16px;
-}
-
-.header {
-  border-bottom: 1px solid #e1e4ef;
-  background: #fff;
-}
-
-.header__content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.header__logo {
-  font-weight: 700;
-}
-
-.header__nav {
-  margin-left: auto;
-  display: flex;
-  gap: 12px;
-}
-
-.header__cart {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 8px;
-}
-
-.header__badge {
-  min-width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6px;
-  font-size: 12px;
-  color: #fff;
-  background: #1f6aff;
-}
-
-.page {
-  border-radius: 12px;
-  background: #fff;
-  padding: 20px;
+  flex: 1;
+  width: 100%;
 }

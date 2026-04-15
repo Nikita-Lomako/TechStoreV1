@@ -1,10 +1,12 @@
-// Placeholder for product shape docs in JS format.
-// Example:
+// Product shape (plain JS). Used by catalog, product page, and cart.
 // {
-//   id: '1',
-//   title: 'Product name',
-//   subtitle: 'Short description',
-//   price: 1000,
-//   rating: 4.5,
-//   images: ['url1', 'url2', 'url3']
+//   id: string,
+//   title: string,
+//   subtitle: string,
+//   price: number,
+//   rating: number,
+//   category: string,
+//   image: string,        // main image for cards
+//   images?: string[],    // gallery (min 3 for product page slider)
+//   description: string,
 // }

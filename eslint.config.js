@@ -31,5 +31,8 @@ export default defineConfig([
         version: 'detect',
       },
     },
+    rules: {
+      'react/prop-types': 'off',
+    },
   },
 ])
