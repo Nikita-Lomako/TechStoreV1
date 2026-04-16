@@ -33,6 +33,22 @@
   color: #4b5563;
 }
 
+.catalog-page__category-filter {
+  margin: 12px 0 0;
+  font-size: 0.9375rem;
+  color: #374151;
+}
+
+.catalog-page__category-clear {
+  margin-left: 12px;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.catalog-page__category-clear:hover {
+  text-decoration: underline;
+}
+
 .catalog-toolbar {
   margin-bottom: 24px;
   display: flex;

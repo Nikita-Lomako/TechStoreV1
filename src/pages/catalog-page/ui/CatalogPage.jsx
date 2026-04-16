@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { productsMock } from '../../../shared/api/mock/products.js'
 import { ProductCard } from '../../../entities/product/ui/ProductCard.jsx'
 import './CatalogPage.css'
@@ -103,6 +104,9 @@ function FilterBlock({ idPrefix, priceMin, priceMax, ratingChecks, onPriceMin, o
 }
 
 export const CatalogPage = () => {
+  const [searchParams] = useSearchParams()
+  const categoryFilter = searchParams.get('category') || ''
+
   const [sortBy, setSortBy] = useState('name-asc')
   const [priceMin, setPriceMin] = useState(0)
   const [priceMax, setPriceMax] = useState(PRICE_MAX)
@@ -111,6 +115,10 @@ export const CatalogPage = () => {
 
   const visibleProducts = useMemo(() => {
     let list = [...productsMock]
+
+    if (categoryFilter) {
+      list = list.filter((p) => p.category === categoryFilter)
+    }
 
     const activeRatings = Object.entries(ratingChecks)
       .filter(([, on]) => on)
@@ -140,7 +148,7 @@ export const CatalogPage = () => {
     }
 
     return list
-  }, [sortBy, priceMin, priceMax, ratingChecks])
+  }, [sortBy, priceMin, priceMax, ratingChecks, categoryFilter])
 
   const toggleRating = (level) => {
     setRatingChecks((prev) => ({ ...prev, [level]: !prev[level] }))
@@ -160,6 +168,14 @@ export const CatalogPage = () => {
         <div className="catalog-page__intro">
           <h1 className="catalog-page__heading">Premium Electronics</h1>
           <p className="catalog-page__subheading">Discover our curated collection of high-quality tech products</p>
+          {categoryFilter ? (
+            <p className="catalog-page__category-filter">
+              Category: <strong>{categoryFilter}</strong>
+              <Link className="catalog-page__category-clear" to="/">
+                Show all products
+              </Link>
+            </p>
+          ) : null}
         </div>
 
         <div className="catalog-toolbar">

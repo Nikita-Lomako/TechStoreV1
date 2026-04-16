@@ -1,12 +1,5 @@
-// Product shape (plain JS). Used by catalog, product page, and cart.
-// {
-//   id: string,
-//   title: string,
-//   subtitle: string,
-//   price: number,
-//   rating: number,
-//   category: string,
-//   image: string,        // main image for cards
-//   images?: string[],    // gallery (min 3 for product page slider)
-//   description: string,
-// }
+// Product shape (plain JS reference for the team).
+// id, title, subtitle, price, rating, category, image, images[]
+// description — коротко; longDescription — развёрнутый текст
+// reviewCount, highlights[{ label, value }], specifications (текст для аккордеона)
+// freeShipping (boolean, optional)

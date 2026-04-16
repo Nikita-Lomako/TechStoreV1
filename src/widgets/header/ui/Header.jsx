@@ -50,14 +50,19 @@ export const Header = ({ cartCount = 0 }) => {
                 `site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}`
               }
               to={APP_ROUTES.catalog}
-              end
               onClick={() => setMenuOpen(false)}
             >
               Products
             </NavLink>
-            <span className="site-header__nav-link site-header__nav-link--muted" tabIndex={-1} aria-disabled="true">
+            <NavLink
+              className={({ isActive }) =>
+                `site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}`
+              }
+              to={APP_ROUTES.categories}
+              onClick={() => setMenuOpen(false)}
+            >
               Categories
-            </span>
+            </NavLink>
             <span className="site-header__nav-link site-header__nav-link--muted" tabIndex={-1} aria-disabled="true">
               Deals
             </span>
