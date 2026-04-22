@@ -88,7 +88,9 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <span className="site-footer__link site-footer__link--muted">Special Deals</span>
+                <Link className="site-footer__link" to={APP_ROUTES.deals}>
+                  Special Deals
+                </Link>
               </li>
               <li>
                 <span className="site-footer__link site-footer__link--muted">About Us</span>

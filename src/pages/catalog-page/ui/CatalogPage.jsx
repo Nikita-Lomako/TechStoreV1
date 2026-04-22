@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { useCart } from '../../../features/cart/index.js'
 import { productsMock } from '../../../shared/api/mock/products.js'
 import { ProductCard } from '../../../entities/product/ui/ProductCard.jsx'
 import './CatalogPage.css'
@@ -104,6 +105,7 @@ function FilterBlock({ idPrefix, priceMin, priceMax, ratingChecks, onPriceMin, o
 }
 
 export const CatalogPage = () => {
+  const { addToCart } = useCart()
   const [searchParams] = useSearchParams()
   const categoryFilter = searchParams.get('category') || ''
 
@@ -233,7 +235,7 @@ export const CatalogPage = () => {
           <div className="catalog-grid-wrap">
             <div className="catalog-grid">
               {visibleProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} onAddToCart={() => addToCart(product.id, 1)} />
               ))}
             </div>
           </div>

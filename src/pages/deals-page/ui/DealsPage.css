@@ -1,0 +1,148 @@
+.deals-page {
+  min-height: 100%;
+  background: #f9fafb;
+}
+
+.deals-page__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+@media (min-width: 1024px) {
+  .deals-page__container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+.deals-page__intro {
+  margin-bottom: 32px;
+}
+
+.deals-page__heading-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.deals-page__tag-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #2563eb;
+}
+
+.deals-page__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  color: #111827;
+}
+
+.deals-page__subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.deals-page__banner {
+  margin-bottom: 32px;
+  padding: 32px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  color: #fff;
+}
+
+.deals-page__banner-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .deals-page__banner-inner {
+    flex-direction: row;
+  }
+}
+
+.deals-page__banner-title {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.deals-page__banner-text {
+  margin: 0;
+  font-size: 1rem;
+  color: #dbeafe;
+}
+
+.deals-page__banner-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.deals-page__clock-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.deals-page__banner-timer-text {
+  font-weight: 600;
+}
+
+.deals-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 640px) {
+  .deals-page__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .deals-page__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.deals-page__cta-wrap {
+  margin-top: 48px;
+  text-align: center;
+}
+
+.deals-page__cta-text {
+  margin: 0 0 16px;
+  color: #4b5563;
+}
+
+.deals-page__cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 32px;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.deals-page__cta-btn:hover {
+  background: #1d4ed8;
+}

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useCart } from '../../../features/cart/index.js'
 import { getProductById, getRelatedProducts } from '../../../shared/api/mock/products.js'
 import { APP_ROUTES } from '../../../shared/config/routes.js'
 import { ProductCard } from '../../../entities/product/ui/ProductCard.jsx'
@@ -42,6 +43,7 @@ const IconCart = () => (
 )
 
 function ProductPageContent({ product }) {
+  const { addToCart } = useCart()
   const related = useMemo(() => getRelatedProducts(product.id, 3), [product.id])
 
   const galleryImages = product.images?.length ? product.images : [product.image]
@@ -170,7 +172,11 @@ function ProductPageContent({ product }) {
               </div>
             </div>
 
-            <button type="button" className="product-page__add-cart">
+            <button
+              type="button"
+              className="product-page__add-cart"
+              onClick={() => addToCart(product.id, quantity)}
+            >
               <IconCart />
               Add to Cart
             </button>
@@ -203,7 +209,7 @@ function ProductPageContent({ product }) {
             <h2 className="product-page__related-title">Related Products</h2>
             <div className="product-page__related-grid">
               {related.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard key={p.id} product={p} onAddToCart={() => addToCart(p.id, 1)} />
               ))}
             </div>
           </section>

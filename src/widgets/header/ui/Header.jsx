@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { useCart } from '../../../features/cart/index.js'
 import { APP_ROUTES } from '../../../shared/config/routes.js'
 import './Header.css'
 
@@ -30,7 +31,8 @@ const IconMenu = () => (
   </svg>
 )
 
-export const Header = ({ cartCount = 0 }) => {
+export const Header = () => {
+  const { totalQuantity } = useCart()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
@@ -63,9 +65,15 @@ export const Header = ({ cartCount = 0 }) => {
             >
               Categories
             </NavLink>
-            <span className="site-header__nav-link site-header__nav-link--muted" tabIndex={-1} aria-disabled="true">
+            <NavLink
+              className={({ isActive }) =>
+                `site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}`
+              }
+              to={APP_ROUTES.deals}
+              onClick={() => setMenuOpen(false)}
+            >
               Deals
-            </span>
+            </NavLink>
             <span className="site-header__nav-link site-header__nav-link--muted" tabIndex={-1} aria-disabled="true">
               About
             </span>
@@ -82,7 +90,7 @@ export const Header = ({ cartCount = 0 }) => {
               onClick={() => setMenuOpen(false)}
             >
               <IconCart />
-              <span className="site-header__cart-badge">{cartCount}</span>
+              {totalQuantity > 0 ? <span className="site-header__cart-badge">{totalQuantity}</span> : null}
             </NavLink>
             <button
               type="button"

@@ -5,12 +5,13 @@ import './ProductCard.css'
 const formatPrice = (value) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
 
-export const ProductCard = ({ product, onAddToCart }) => {
+export const ProductCard = ({ product, onAddToCart, dealBadge }) => {
   const productUrl = `/product/${product.id}`
 
   return (
-    <article className="product-card">
+    <article className={`product-card${dealBadge ? ' product-card--deal' : ''}`}>
       <Link className="product-card__media" to={productUrl}>
+        {dealBadge ? <span className="product-card__deal-badge">{dealBadge}</span> : null}
         <img src={product.image} alt={product.title} className="product-card__img" loading="lazy" />
       </Link>
       <div className="product-card__body">
