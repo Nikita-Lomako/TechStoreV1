@@ -108,7 +108,7 @@ export const CartPage = () => {
                       <Link className="cart-line__title" to={`/product/${product.id}`}>
                         {product.title}
                       </Link>
-                      <p className="cart-line__category">{product.category}</p>
+                      <p className="cart-line__category">{product.subtitle ?? product.category}</p>
                     </div>
                     <button
                       type="button"

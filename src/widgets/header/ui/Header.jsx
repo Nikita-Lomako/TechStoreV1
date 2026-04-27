@@ -74,9 +74,15 @@ export const Header = () => {
             >
               Deals
             </NavLink>
-            <span className="site-header__nav-link site-header__nav-link--muted" tabIndex={-1} aria-disabled="true">
+            <NavLink
+              className={({ isActive }) =>
+                `site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}`
+              }
+              to={APP_ROUTES.about}
+              onClick={() => setMenuOpen(false)}
+            >
               About
-            </span>
+            </NavLink>
           </nav>
 
           <div className="site-header__actions">

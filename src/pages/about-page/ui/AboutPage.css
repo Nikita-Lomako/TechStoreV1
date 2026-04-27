@@ -1,0 +1,169 @@
+.about-page {
+  min-height: 100%;
+  background: #f9fafb;
+}
+
+.about-page__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+@media (min-width: 1024px) {
+  .about-page__container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+.about-page__hero {
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.about-page__title {
+  margin: 0 0 16px;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 700;
+  color: #111827;
+}
+
+.about-page__subtitle {
+  margin: 0 auto;
+  max-width: 768px;
+  font-size: 1.125rem;
+  color: #4b5563;
+}
+
+.about-page__card {
+  margin-bottom: 48px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  padding: 32px;
+}
+
+.about-page__h2 {
+  margin: 0 0 16px;
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+  font-weight: 700;
+  color: #111827;
+}
+
+.about-page__h2--center {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.about-page__text-block {
+  display: grid;
+  gap: 16px;
+  color: #374151;
+  line-height: 1.65;
+}
+
+.about-page__text-block p {
+  margin: 0;
+}
+
+.about-page__values {
+  margin-bottom: 48px;
+}
+
+.about-page__values-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .about-page__values-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.about-page__value-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  padding: 24px;
+  text-align: center;
+}
+
+.about-page__value-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  margin: 0 auto 16px;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-page__value-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.about-page__value-title {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.about-page__value-text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.about-page__contacts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .about-page__contacts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.about-page__contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.about-page__contact-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-page__contact-icon-svg {
+  width: 20px;
+  height: 20px;
+}
+
+.about-page__contact-title {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.about-page__contact-text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+}

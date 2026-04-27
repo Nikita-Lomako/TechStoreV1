@@ -1,13 +1,13 @@
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { CartProvider } from '../../../features/cart/index.js'
 import { AppRoutes } from './AppRoutes.jsx'
 
 export const AppRouterProvider = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <CartProvider>
         <AppRoutes />
       </CartProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
