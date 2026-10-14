@@ -27,3 +27,12 @@ a {
   flex: 1;
   width: 100%;
 }
+
+.app-route-status {
+  display: flex;
+  min-height: 40vh;
+  align-items: center;
+  justify-content: center;
+  color: #4b5563;
+  font-size: 1rem;
+}
