@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../features/auth/index.js'
 import { useCart } from '../../../features/cart/index.js'
 import { APP_ROUTES } from '../../../shared/config/routes.js'
 import './Header.css'
@@ -31,15 +32,28 @@ const IconMenu = () => (
   </svg>
 )
 
+const navLinkClass = ({ isActive }) =>
+  `site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}`
+
 export const Header = () => {
   const { totalQuantity } = useCart()
+  const { user, isAdmin, initializing, logout } = useAuth()
+  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const closeMenu = () => setMenuOpen(false)
+
+  const handleLogout = async () => {
+    closeMenu()
+    await logout()
+    navigate(APP_ROUTES.catalog)
+  }
 
   return (
     <header className="site-header">
       <div className="site-header__container">
         <div className="site-header__row">
-          <NavLink className="site-header__brand" to={APP_ROUTES.catalog} onClick={() => setMenuOpen(false)}>
+          <NavLink className="site-header__brand" to={APP_ROUTES.catalog} onClick={closeMenu}>
             <div className="site-header__logo-mark" aria-hidden="true">
               <span>T</span>
             </div>
@@ -47,53 +61,81 @@ export const Header = () => {
           </NavLink>
 
           <nav className={`site-header__nav ${menuOpen ? 'site-header__nav--open' : ''}`} aria-label="Main menu">
-            <NavLink
-              className={({ isActive }) =>
-                `site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}`
-              }
-              to={APP_ROUTES.catalog}
-              onClick={() => setMenuOpen(false)}
-            >
+            <NavLink className={navLinkClass} to={APP_ROUTES.catalog} end onClick={closeMenu}>
               Products
             </NavLink>
-            <NavLink
-              className={({ isActive }) =>
-                `site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}`
-              }
-              to={APP_ROUTES.categories}
-              onClick={() => setMenuOpen(false)}
-            >
+            <NavLink className={navLinkClass} to={APP_ROUTES.categories} onClick={closeMenu}>
               Categories
             </NavLink>
-            <NavLink
-              className={({ isActive }) =>
-                `site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}`
-              }
-              to={APP_ROUTES.deals}
-              onClick={() => setMenuOpen(false)}
-            >
+            <NavLink className={navLinkClass} to={APP_ROUTES.deals} onClick={closeMenu}>
               Deals
             </NavLink>
-            <NavLink
-              className={({ isActive }) =>
-                `site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}`
-              }
-              to={APP_ROUTES.about}
-              onClick={() => setMenuOpen(false)}
-            >
+            <NavLink className={navLinkClass} to={APP_ROUTES.about} onClick={closeMenu}>
               About
             </NavLink>
+
+            {!initializing && !user ? (
+              <>
+                <NavLink className={`${navLinkClass({ isActive: false })} site-header__nav-link--mobile-auth`} to={APP_ROUTES.login} onClick={closeMenu}>
+                  Войти
+                </NavLink>
+                <NavLink className={`${navLinkClass({ isActive: false })} site-header__nav-link--mobile-auth`} to={APP_ROUTES.register} onClick={closeMenu}>
+                  Регистрация
+                </NavLink>
+              </>
+            ) : null}
+
+            {!initializing && user ? (
+              <>
+                {isAdmin ? (
+                  <NavLink className={`${navLinkClass({ isActive: false })} site-header__nav-link--mobile-auth`} to={APP_ROUTES.adminProducts} onClick={closeMenu}>
+                    Admin panel
+                  </NavLink>
+                ) : null}
+                <button type="button" className="site-header__nav-link site-header__nav-link--mobile-auth site-header__nav-logout" onClick={handleLogout}>
+                  Выйти ({user.email})
+                </button>
+              </>
+            ) : null}
           </nav>
 
           <div className="site-header__actions">
-            <button type="button" className="site-header__icon-btn" aria-label="Search">
+            <NavLink className="site-header__icon-btn" to={APP_ROUTES.catalog} aria-label="Search products" onClick={closeMenu}>
               <IconSearch />
-            </button>
+            </NavLink>
+
+            <div className="site-header__auth">
+              {initializing ? null : user ? (
+                <>
+                  {isAdmin ? (
+                    <NavLink className="site-header__auth-link" to={APP_ROUTES.adminProducts}>
+                      Admin
+                    </NavLink>
+                  ) : null}
+                  <span className="site-header__auth-email" title={user.email}>
+                    {user.email}
+                  </span>
+                  <button type="button" className="site-header__auth-btn" onClick={handleLogout}>
+                    Выйти
+                  </button>
+                </>
+              ) : (
+                <>
+                  <NavLink className="site-header__auth-link" to={APP_ROUTES.login}>
+                    Войти
+                  </NavLink>
+                  <NavLink className="site-header__auth-link site-header__auth-link--primary" to={APP_ROUTES.register}>
+                    Регистрация
+                  </NavLink>
+                </>
+              )}
+            </div>
+
             <NavLink
               className="site-header__icon-btn site-header__cart-link"
               to={APP_ROUTES.cart}
               aria-label="Shopping cart"
-              onClick={() => setMenuOpen(false)}
+              onClick={closeMenu}
             >
               <IconCart />
               {totalQuantity > 0 ? <span className="site-header__cart-badge">{totalQuantity}</span> : null}
