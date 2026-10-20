@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../../features/auth/index.js'
 import { useCart } from '../../../features/cart/index.js'
 import { APP_ROUTES } from '../../../shared/config/routes.js'
-import { VALID_PROMO_CODE } from '../../../shared/config/promo.js'
 import './CartPage.css'
 
 const formatPrice = (value) =>
@@ -43,6 +43,7 @@ const IconMapPin = () => (
 )
 
 export const CartPage = () => {
+  const { isAuthenticated } = useAuth()
   const {
     lines,
     subtotal,
@@ -53,27 +54,61 @@ export const CartPage = () => {
     removeFromCart,
     setItemQuantity,
     applyPromoCode,
+    removePromoCode,
+    loading,
+    mutating,
+    error,
+    clearError,
   } = useCart()
 
   const [promoInput, setPromoInput] = useState('')
   const [promoError, setPromoError] = useState(null)
+  const [applyingPromo, setApplyingPromo] = useState(false)
 
-  const handleApplyPromo = (e) => {
-    e.preventDefault()
+  const handleApplyPromo = async (event) => {
+    event.preventDefault()
     const trimmed = promoInput.trim()
+
     if (!trimmed) {
       setPromoError(null)
       return
     }
-    const result = applyPromoCode(trimmed)
-    if (result.ok) {
-      setPromoError(null)
-      setPromoInput('')
-    } else if (result.error === 'invalid') {
-      setPromoError('invalid')
-    } else {
-      setPromoError(null)
+
+    setApplyingPromo(true)
+    setPromoError(null)
+
+    try {
+      const result = await applyPromoCode(trimmed)
+      if (result.ok) {
+        setPromoInput('')
+      } else if (result.error === 'invalid') {
+        setPromoError('Неверный промокод')
+      } else if (result.message) {
+        setPromoError(result.message)
+      }
+    } finally {
+      setApplyingPromo(false)
     }
+  }
+
+  const handleRemovePromo = async () => {
+    await removePromoCode()
+    setPromoInput('')
+    setPromoError(null)
+  }
+
+  if (loading && lines.length === 0) {
+    return (
+      <div className="cart-page cart-page--empty">
+        <div className="cart-page__container">
+          <h1 className="cart-page__title">Корзина</h1>
+          <div className="cart-page__status" role="status">
+            <span className="cart-page__spinner" aria-hidden="true" />
+            <p className="cart-page__empty-text">Загружаем корзину…</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (lines.length === 0) {
@@ -81,6 +116,14 @@ export const CartPage = () => {
       <div className="cart-page cart-page--empty">
         <div className="cart-page__container">
           <h1 className="cart-page__title">Корзина</h1>
+          {error ? (
+            <div className="cart-page__alert cart-page__alert--error" role="alert">
+              <span>{error}</span>
+              <button type="button" className="cart-page__alert-close" onClick={clearError}>
+                Закрыть
+              </button>
+            </div>
+          ) : null}
           <p className="cart-page__empty-text">В корзине пока ничего нет.</p>
           <Link className="cart-page__empty-btn" to={APP_ROUTES.catalog}>
             Вернуться в каталог
@@ -93,62 +136,95 @@ export const CartPage = () => {
   return (
     <div className="cart-page">
       <div className="cart-page__container">
-        <h1 className="cart-page__title">Shopping Cart</h1>
+        <h1 className="cart-page__title">Корзина</h1>
+
+        {!isAuthenticated ? (
+          <div className="cart-page__guest">
+            <div>
+              <p className="cart-page__guest-title">Вы не вошли в аккаунт</p>
+              <p className="cart-page__guest-text">
+                Корзина сохранится на этом устройстве. После входа товары автоматически перенесутся в ваш аккаунт.
+              </p>
+            </div>
+            <Link className="cart-page__guest-btn" to={APP_ROUTES.login}>
+              Войти
+            </Link>
+          </div>
+        ) : null}
+
+        {error ? (
+          <div className="cart-page__alert cart-page__alert--error" role="alert">
+            <span>{error}</span>
+            <button type="button" className="cart-page__alert-close" onClick={clearError}>
+              Закрыть
+            </button>
+          </div>
+        ) : null}
 
         <div className="cart-page__grid">
           <div className="cart-page__lines">
-            {lines.map(({ product, quantity, lineTotal }) => (
-              <div key={product.id} className="cart-line">
-                <Link className="cart-line__thumb-wrap" to={`/product/${product.id}`}>
-                  <img src={product.image} alt="" className="cart-line__thumb" />
-                </Link>
-                <div className="cart-line__body">
-                  <div className="cart-line__top">
-                    <div>
-                      <Link className="cart-line__title" to={`/product/${product.id}`}>
-                        {product.title}
-                      </Link>
-                      <p className="cart-line__category">{product.subtitle ?? product.category}</p>
-                    </div>
-                    <button
-                      type="button"
-                      className="cart-line__remove"
-                      aria-label="Remove item"
-                      onClick={() => removeFromCart(product.id)}
-                    >
-                      <IconTrash />
-                    </button>
-                  </div>
-                  <div className="cart-line__bottom">
-                    <div className="cart-line__qty">
+            {lines.map(({ product, quantity, lineTotal }) => {
+              const maxQuantity = Math.max(1, Math.min(99, product.stockQuantity ?? 99))
+
+              return (
+                <div key={product.id} className="cart-line">
+                  <Link className="cart-line__thumb-wrap" to={`/product/${product.id}`}>
+                    {product.image ? (
+                      <img src={product.image} alt="" className="cart-line__thumb" />
+                    ) : (
+                      <span className="cart-line__thumb-placeholder">No image</span>
+                    )}
+                  </Link>
+                  <div className="cart-line__body">
+                    <div className="cart-line__top">
+                      <div>
+                        <Link className="cart-line__title" to={`/product/${product.id}`}>
+                          {product.title}
+                        </Link>
+                        <p className="cart-line__category">{product.subtitle ?? product.category ?? 'Product'}</p>
+                      </div>
                       <button
                         type="button"
-                        className="cart-line__qty-btn"
-                        aria-label="Decrease quantity"
-                        disabled={quantity <= 1}
-                        onClick={() => setItemQuantity(product.id, quantity - 1)}
+                        className="cart-line__remove"
+                        aria-label={`Remove ${product.title} from cart`}
+                        disabled={mutating}
+                        onClick={() => removeFromCart(product.id)}
                       >
-                        −
-                      </button>
-                      <span className="cart-line__qty-value">{quantity}</span>
-                      <button
-                        type="button"
-                        className="cart-line__qty-btn"
-                        aria-label="Increase quantity"
-                        disabled={quantity >= 99}
-                        onClick={() => setItemQuantity(product.id, quantity + 1)}
-                      >
-                        +
+                        <IconTrash />
                       </button>
                     </div>
-                    <div className="cart-line__prices">
-                      <p className="cart-line__line-total">{formatPrice(lineTotal)}</p>
-                      <p className="cart-line__each">{formatPrice(product.price)} each</p>
+                    <div className="cart-line__bottom">
+                      <div className="cart-line__qty">
+                        <button
+                          type="button"
+                          className="cart-line__qty-btn"
+                          aria-label="Decrease quantity"
+                          disabled={mutating || quantity <= 1}
+                          onClick={() => setItemQuantity(product.id, quantity - 1)}
+                        >
+                          −
+                        </button>
+                        <span className="cart-line__qty-value">{quantity}</span>
+                        <button
+                          type="button"
+                          className="cart-line__qty-btn"
+                          aria-label="Increase quantity"
+                          disabled={mutating || quantity >= maxQuantity}
+                          title={quantity >= maxQuantity ? `Only ${maxQuantity} available` : undefined}
+                          onClick={() => setItemQuantity(product.id, quantity + 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <div className="cart-line__prices">
+                        <p className="cart-line__line-total">{formatPrice(lineTotal)}</p>
+                        <p className="cart-line__each">{formatPrice(product.price)} each</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           <div className="cart-page__aside">
@@ -159,9 +235,9 @@ export const CartPage = () => {
                   <span className="cart-summary__label">Subtotal</span>
                   <span className="cart-summary__value">{formatPrice(subtotal)}</span>
                 </div>
-                {appliedPromo === VALID_PROMO_CODE ? (
+                {appliedPromo && discount > 0 ? (
                   <div className="cart-summary__row cart-summary__row--discount">
-                    <span className="cart-summary__label">Discount ({VALID_PROMO_CODE})</span>
+                    <span className="cart-summary__label">Discount ({appliedPromo})</span>
                     <span className="cart-summary__value">−{formatPrice(discount)}</span>
                   </div>
                 ) : null}
@@ -185,29 +261,44 @@ export const CartPage = () => {
                     type="text"
                     className="cart-promo__input"
                     placeholder="Enter code"
+                    autoComplete="off"
                     value={promoInput}
-                    onChange={(e) => {
-                      setPromoInput(e.target.value)
+                    disabled={mutating || applyingPromo || Boolean(appliedPromo)}
+                    onChange={(event) => {
+                      setPromoInput(event.target.value)
                       if (promoError) setPromoError(null)
                     }}
                   />
                   <button
                     type="submit"
                     className="cart-promo__apply"
-                    disabled={!promoInput.trim()}
+                    disabled={!promoInput.trim() || mutating || applyingPromo || Boolean(appliedPromo)}
                   >
-                    Apply
+                    {applyingPromo ? '…' : 'Apply'}
                   </button>
                 </div>
-                {promoError === 'invalid' ? (
-                  <p className="cart-promo__error" role="alert">
-                    Неверный промокод
+
+                {appliedPromo ? (
+                  <p className="cart-promo__applied">
+                    Applied: <strong>{appliedPromo}</strong>
+                    <button type="button" className="cart-promo__remove" onClick={handleRemovePromo} disabled={mutating}>
+                      Remove
+                    </button>
                   </p>
                 ) : null}
-                <p className="cart-promo__hint">Try code &quot;SAVE10&quot; for 10% off</p>
+
+                {promoError ? (
+                  <p className="cart-promo__error" role="alert">
+                    {promoError}
+                  </p>
+                ) : null}
+
+                {!appliedPromo ? (
+                  <p className="cart-promo__hint">Try code &quot;SAVE10&quot; for 10% off</p>
+                ) : null}
               </form>
 
-              <button type="button" className="cart-summary__checkout">
+              <button type="button" className="cart-summary__checkout" disabled={mutating || loading}>
                 Proceed to Checkout
               </button>
             </div>
