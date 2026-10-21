@@ -1,0 +1,67 @@
+name: techstore
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-techstore}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-techstore}
+      POSTGRES_DB: ${POSTGRES_DB:-techstore}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-techstore} -d ${POSTGRES_DB:-techstore}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-techstore}:${POSTGRES_PASSWORD:-techstore}@postgres:5432/${POSTGRES_DB:-techstore}?schema=public
+      DIRECT_URL: postgresql://${POSTGRES_USER:-techstore}:${POSTGRES_PASSWORD:-techstore}@postgres:5432/${POSTGRES_DB:-techstore}?schema=public
+      REDIS_URL: redis://redis:6379
+      RUN_MIGRATIONS: "true"
+      RUN_SEED: ${RUN_SEED:-true}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    name: techstore_postgres_data
+  redis_data:
+    name: techstore_redis_data
