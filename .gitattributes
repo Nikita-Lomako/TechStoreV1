@@ -1,0 +1,6 @@
+* text=auto
+
+# Keep container entrypoints and SQL migrations LF-only on every platform.
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.sql text eol=lf

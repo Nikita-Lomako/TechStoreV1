@@ -124,6 +124,85 @@
   color: #9ca3af;
 }
 
+.site-header__nav-link--mobile-auth {
+  display: block;
+}
+
+.site-header__nav-logout {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .site-header__nav-link--mobile-auth {
+    display: none;
+  }
+}
+
+.site-header__auth {
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (min-width: 1024px) {
+  .site-header__auth {
+    display: flex;
+  }
+}
+
+.site-header__auth-link {
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.site-header__auth-link:hover {
+  color: #2563eb;
+}
+
+.site-header__auth-link--primary {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+}
+
+.site-header__auth-link--primary:hover {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.site-header__auth-email {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.site-header__auth-btn {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  padding: 7px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.site-header__auth-btn:hover {
+  background: #f9fafb;
+}
+
 .site-header__actions {
   display: flex;
   align-items: center;

@@ -5,4 +5,7 @@ export const APP_ROUTES = {
   about: '/about',
   product: '/product/:productId',
   cart: '/cart',
+  login: '/login',
+  register: '/register',
+  adminProducts: '/admin/products',
 }

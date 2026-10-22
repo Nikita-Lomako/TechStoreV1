@@ -1,11 +1,11 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getProductById } from '../../../shared/api/mock/products.js'
+import { getApiErrorMessage } from '../../../shared/api/client.js'
+import { fetchProducts } from '../../../shared/api/products.js'
 import { useCart } from '../../../features/cart/index.js'
 import { APP_ROUTES } from '../../../shared/config/routes.js'
 import { ProductCard } from '../../../entities/product/ui/ProductCard.jsx'
 import './DealsPage.css'
-
-const DEAL_IDS = ['1', '2', '3', '4']
 
 const IconTag = () => (
   <svg className="deals-page__tag-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -29,7 +29,46 @@ const IconClock = () => (
 
 export const DealsPage = () => {
   const { addToCart } = useCart()
-  const dealProducts = DEAL_IDS.map((id) => getProductById(id)).filter(Boolean)
+  const [dealProducts, setDealProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [reloadToken, setReloadToken] = useState(0)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    let cancelled = false
+
+    const load = async () => {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const data = await fetchProducts(
+          {
+            page: 1,
+            limit: 4,
+            min_rating: 4,
+            sort_by: 'rating',
+            order: 'desc',
+          },
+          { signal: controller.signal },
+        )
+        if (!cancelled) setDealProducts(data.items)
+      } catch (loadError) {
+        if (cancelled || loadError?.name === 'AbortError') return
+        setError(getApiErrorMessage(loadError))
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    load()
+
+    return () => {
+      cancelled = true
+      controller.abort()
+    }
+  }, [reloadToken])
 
   return (
     <div className="deals-page">
@@ -55,16 +94,40 @@ export const DealsPage = () => {
           </div>
         </div>
 
-        <div className="deals-page__grid">
-          {dealProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              dealBadge="Save 20%"
-              onAddToCart={() => addToCart(product.id, 1)}
-            />
-          ))}
-        </div>
+        {error ? (
+          <div className="deals-page__status deals-page__status--error" role="alert">
+            <p className="deals-page__status-text">{error}</p>
+            <button type="button" className="deals-page__status-btn" onClick={() => setReloadToken((v) => v + 1)}>
+              Try again
+            </button>
+          </div>
+        ) : null}
+
+        {!error && loading ? (
+          <div className="deals-page__status" role="status">
+            <span className="deals-page__spinner" aria-hidden="true" />
+            <p className="deals-page__status-text">Loading deals…</p>
+          </div>
+        ) : null}
+
+        {!error && !loading && dealProducts.length === 0 ? (
+          <div className="deals-page__status">
+            <p className="deals-page__status-text">No deals are active right now. Check the catalog instead.</p>
+          </div>
+        ) : null}
+
+        {dealProducts.length > 0 ? (
+          <div className="deals-page__grid">
+            {dealProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                dealBadge="Save 20%"
+                onAddToCart={() => addToCart(product.id, 1)}
+              />
+            ))}
+          </div>
+        ) : null}
 
         <div className="deals-page__cta-wrap">
           <p className="deals-page__cta-text">Want to see more products?</p>
