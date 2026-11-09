@@ -269,7 +269,7 @@ client.js видит 401, есть refresh
 1. preHandler requireAdmin:
    authenticate → jwtVerify → request.user
    role !== 'admin' → 403 FORBIDDEN
-2. Валидация body: title, description, price, images >= 3, stockQuantity...
+2. Валидация body: title, description, price, images >= 1, stockQuantity...
 3. createProduct:
    prisma.product.create(...)
 4. invalidateProductCache:

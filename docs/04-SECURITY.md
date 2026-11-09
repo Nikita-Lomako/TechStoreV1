@@ -168,7 +168,7 @@ prisma.cartItem.findFirst({ where: { id: itemId, cart: { userId } } })
 - `email` — формат email, максимум 320;
 - `password` — 8..72;
 - `quantity` — 1..99;
-- `images` — минимум 3, максимум 12;
+- `images` — минимум 1, максимум 12;
 - `price` — 0..100 000 000;
 - `rating` — 0..5;
 - `page` — 1..100 000;
