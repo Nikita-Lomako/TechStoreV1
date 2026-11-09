@@ -2,7 +2,18 @@
 
 Учебный интернет-магазин электроники: React SPA + REST API на Fastify, PostgreSQL, Prisma и Redis.
 
-Проект развивает готовый фронтенд из предыдущих лабораторных работ и добавляет полноценный бэкенд: JWT-аутентификацию, роли, каталог с серверными фильтрами и пагинацией, корзину с промокодами, Redis-кэш каталога, загрузку изображений в Supabase Storage и конфигурацию деплоя в Docker / Koyeb.
+Проект развивает готовый фронтенд из предыдущих лабораторных работ и добавляет полноценный бэкенд: JWT-аутентификацию, роли, каталог с серверными фильтрами и пагинацией, корзину с промокодами, Redis-кэш каталога, загрузку изображений в Supabase Storage и конфигурацию деплоя в Docker / Render.
+
+## Подробная документация
+
+Если нужно понять, как всё устроено, зачем нужна каждая технология и как деплоить проект, начните с [`docs/README.md`](./docs/README.md). Там есть:
+
+- разбор всех технологий, паттернов и терминов (что это, зачем, как работает, альтернативы);
+- архитектура и жизненный цикл запросов;
+- построчный разбор ключевого кода;
+- безопасность и модель угроз;
+- что видно в логах и как диагностировать ошибки;
+- пошаговый деплой в Supabase, Render и GitHub Pages.
 
 ## Стек
 
@@ -13,7 +24,7 @@
 | База данных | PostgreSQL 16, Prisma ORM 6 |
 | Кэш | Redis 7 (in-memory fallback для тестов) |
 | Хранилище | Supabase Storage |
-| Деплой | Docker, Docker Compose, Koyeb |
+| Деплой | Docker, Docker Compose, Render |
 | Авторизация | JWT access + refresh, bcrypt, RBAC (`customer` / `admin`) |
 
 ## Возможности
@@ -267,31 +278,41 @@ curl -i "http://localhost:3000/api/products?page=1&limit=4&sort_by=price&order=a
 
 ## Деплой
 
-### Koyeb (API)
+### Render (API)
 
-Репозиторий содержит готовый `server/Dockerfile`. В Koyeb:
+Репозиторий содержит готовый `server/Dockerfile`. В Render:
 
-1. **Create Service → GitHub** и выберите репозиторий.
-2. Builder: **Dockerfile**, Dockerfile path: `server/Dockerfile`, context: `server`.
-3. Port: `3000`, protocol HTTP, healthcheck path `/health/live`.
-4. Добавьте переменные окружения из `server/.env.example`:
+1. **New → Web Service**, подключите GitHub и выберите репозиторий.
+2. **Language**: `Docker`, **Branch**: `master`.
+3. **Root Directory**: `server`.
+4. **Dockerfile Path**: `Dockerfile` (относительно Root Directory).
+5. **Build Command** и **Start Command** оставьте пустыми, **Health Check Path**: `/health/live`.
+6. Добавьте переменные окружения из `server/.env.example`:
    - `DATABASE_URL`, `DIRECT_URL` — Supabase;
    - `REDIS_URL` — Upstash Redis или другой managed Redis;
-   - `JWT_SECRET`, `PUBLIC_API_URL` (URL сервиса Koyeb), `FRONTEND_URL`;
+   - `JWT_SECRET`, `PUBLIC_API_URL` (URL сервиса Render), `APP_PUBLIC_URL`, `FRONTEND_URL`;
    - `CORS_ORIGINS` — домен фронтенда;
    - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`;
    - `RUN_MIGRATIONS=true`, `RUN_SEED=false` (после первого запуска).
-5. Задеплойте сервис. Entrypoint применит миграции и запустит API.
+7. Задеплойте сервис. Entrypoint применит миграции и запустит API. `PORT` задаёт Render, вручную его добавлять не нужно.
 
-После деплоя Swagger будет доступен по адресу `https://<your-service>.koyeb.app/docs`, OpenAPI — `https://<your-service>.koyeb.app/docs/json`.
+После деплоя Swagger будет доступен по адресу `https://<your-service>.onrender.com/docs`, OpenAPI — `https://<your-service>.onrender.com/docs/json`. Текущий API проекта: <https://techstore-api-nl.onrender.com>.
 
 ### GitHub Pages (frontend)
 
-```bash
-VITE_API_URL=https://<your-service>.koyeb.app npm run deploy
+Создайте в корне `.env.production.local` (файл в `.gitignore`):
+
+```env
+VITE_API_URL=https://<your-service>.onrender.com
 ```
 
-`npm run deploy` собирает приложение и публикует `dist` в ветку `gh-pages`. Приложение использует `HashRouter`, поэтому прямые ссылки работают на статическом хостинге. Не забудьте добавить домен Pages в `CORS_ORIGINS` на API.
+Затем опубликуйте:
+
+```bash
+npm run deploy
+```
+
+`npm run deploy` собирает приложение и публикует `dist` в ветку `gh-pages`. Приложение использует `HashRouter`, поэтому прямые ссылки работают на статическом хостинге. Не забудьте добавить домен Pages в `CORS_ORIGINS` на API. Текущий фронтенд: <https://nikita-lomako.github.io/TechStoreV1/>.
 
 ## Git Flow
 
@@ -323,6 +344,6 @@ Unit-тесты покрывают нормализацию query-парамет
 ## Ограничения
 
 - Оформление заказа (checkout) и платежи не входят в вариант задания — кнопка checkout является заглушкой.
-- Реальный деплой Supabase / Koyeb не выполнялся: подготовлены Dockerfile, Compose, примеры окружения и инструкции.
+- Облачный деплой выполнен: Supabase, Upstash Redis, Render и GitHub Pages. Инструкция для повторения — в [`docs/06-DEPLOYMENT.md`](./docs/06-DEPLOYMENT.md).
 - Загрузка изображений требует настроенного Supabase Storage.
 - SMTP не обязателен: без него ссылка восстановления пароля выводится в лог.
