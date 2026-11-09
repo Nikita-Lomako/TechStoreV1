@@ -92,7 +92,7 @@ export const AdminProductsPage = () => {
     if (!form.title.trim()) throw new Error('Укажите название товара.')
     if (!form.description.trim()) throw new Error('Укажите краткое описание.')
     if (!form.category.trim()) throw new Error('Укажите категорию.')
-    if (images.length < 3) throw new Error('Нужно минимум 3 изображения (по одному URL в строке).')
+    if (images.length < 1) throw new Error('Добавьте хотя бы одно изображение (по одному URL в строке).')
 
     const price = Number(form.price)
     const stockQuantity = Number(form.stockQuantity)
@@ -355,7 +355,7 @@ export const AdminProductsPage = () => {
               </label>
 
               <label className="admin-form__field admin-form__field--wide">
-                <span>Изображения * (по одному URL в строке, минимум 3)</span>
+                <span>Изображения * (по одному URL в строке, минимум 1)</span>
                 <textarea
                   value={form.images}
                   onChange={(event) => updateField('images', event.target.value)}
