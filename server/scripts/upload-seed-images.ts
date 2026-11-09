@@ -44,8 +44,18 @@ async function ensureBucket(): Promise<void> {
     return
   }
 
-  if (response.status !== 404) {
-    throw new Error(`Could not check bucket: ${response.status} ${await response.text()}`)
+  const errorBody = await response.text()
+  let errorCode = ''
+  try {
+    errorCode = JSON.parse(errorBody)?.code ?? ''
+  } catch {
+    // Supabase may return a non-JSON error body.
+  }
+
+  // Supabase Storage returns 400 with code NoSuchBucket for a missing bucket.
+  const isMissing = response.status === 404 || errorCode === 'NoSuchBucket'
+  if (!isMissing) {
+    throw new Error(`Could not check bucket: ${response.status} ${errorBody}`)
   }
 
   const create = await fetch(`${supabaseUrl}/storage/v1/bucket`, {
