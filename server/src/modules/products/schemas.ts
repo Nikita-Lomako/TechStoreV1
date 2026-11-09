@@ -79,7 +79,7 @@ export const CreateProductBodySchema = Type.Object({
   rating: Type.Optional(Type.Number({ minimum: 0, maximum: 5 })),
   category: Type.String({ minLength: 1, maxLength: 100 }),
   images: Type.Array(Type.String({ minLength: 1, maxLength: 2_000 }), {
-    minItems: 3,
+    minItems: 1,
     maxItems: 12,
   }),
   stockQuantity: Type.Integer({ minimum: 0, maximum: 1_000_000 }),

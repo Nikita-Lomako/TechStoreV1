@@ -19,9 +19,10 @@ describe('product schemas', () => {
     expect(Value.Check(CreateProductBodySchema, validProduct)).toBe(true)
   })
 
-  it('requires at least three images', () => {
+  it('requires at least one image', () => {
     const body = { ...validProduct, images: ['https://example.com/1.jpg'] }
-    expect(Value.Check(CreateProductBodySchema, body)).toBe(false)
+    expect(Value.Check(CreateProductBodySchema, body)).toBe(true)
+    expect(Value.Check(CreateProductBodySchema, { ...validProduct, images: [] })).toBe(false)
   })
 
   it('rejects a price above the allowed range', () => {
